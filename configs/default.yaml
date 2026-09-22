@@ -1,0 +1,50 @@
+# ─── Open-Set Person Re-Identification Configuration ───────────────────────
+
+data:
+  root: ./datasets/market1501
+  height: 256
+  width: 128
+  num_workers: 4
+  pk_p: 16            # identities per batch (PK sampler)
+  pk_k: 4             # images per identity per batch
+
+model:
+  backbone: osnet_x0_5   # osnet_x0_5 | resnet18 | mobilenetv3_small
+  embed_dim: 256
+  pretrained: true
+
+loss:
+  margin_type: arcface    # arcface | cosface | none
+  arcface_s: 30.0
+  arcface_m: 0.50
+  cosface_s: 30.0
+  cosface_m: 0.35
+  triplet: true
+  triplet_margin: 0.3
+  triplet_weight: 1.0
+  margin_weight: 1.0
+
+train:
+  epochs: 60
+  lr: 3.5e-4
+  weight_decay: 5.0e-4
+  warmup_epochs: 5
+  scheduler: cosine       # cosine | step
+  step_size: 20
+  gamma: 0.1
+  fp16: true
+  seed: 42
+
+openset:
+  unknown_ratio: 0.2       # fraction of training IDs held out as impostors
+  threshold_mode: adaptive  # global | adaptive
+  global_threshold: 0.5
+  adaptive_alpha: 0.8       # blend weight: alpha*per_class + (1-alpha)*global
+
+calibration:
+  method: temperature       # temperature | platt | isotonic
+  val_fraction: 0.2
+
+output:
+  dir: ./output
+  save_freq: 10
