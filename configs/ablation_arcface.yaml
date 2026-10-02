@@ -1,0 +1,49 @@
+# Ablation: ArcFace margin only (no triplet)
+data:
+  root: ./datasets/market1501
+  height: 256
+  width: 128
+  num_workers: 4
+  pk_p: 16
+  pk_k: 4
+
+model:
+  backbone: osnet_x0_5
+  embed_dim: 256
+  pretrained: true
+
+loss:
+  margin_type: arcface          # ← ArcFace on
+  arcface_s: 30.0
+  arcface_m: 0.50
+  cosface_s: 30.0
+  cosface_m: 0.35
+  triplet: false                # ← triplet OFF
+  triplet_margin: 0.3
+  triplet_weight: 1.0
+  margin_weight: 1.0
+
+train:
+  epochs: 60
+  lr: 3.5e-4
+  weight_decay: 5.0e-4
+  warmup_epochs: 5
+  scheduler: cosine
+  step_size: 20
+  gamma: 0.1
+  fp16: true
+  seed: 42
+
+openset:
+  unknown_ratio: 0.2
+  threshold_mode: global
+  global_threshold: 0.5
+  adaptive_alpha: 0.8
+
+calibration:
+  method: temperature
+  val_fraction: 0.2
+
+output:
+  dir: ./output/ablation_arcface
+  save_freq: 10
